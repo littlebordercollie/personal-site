@@ -1,4 +1,4 @@
-import { Mail, BookOpen, MessageCircle, ShieldCheck } from 'lucide-react';
+import { Mail, BookOpen, MessageCircle } from 'lucide-react';
 
 const ICP_RECORDS: Record<string, string> = {
   'ailiuxu.com': '京ICP备2025136661号-2',
@@ -7,11 +7,20 @@ const ICP_RECORDS: Record<string, string> = {
   'www.liuxu.wiki': '京ICP备2025136661号-3',
 };
 
-// 公安联网备案号必须使用平台实际签发的编号，未签发前不展示占位号。
+// 仅把平台实际签发的编号映射到对应域名；未签发或未确认归属时不展示。
 const PUBLIC_SECURITY_RECORDS: Record<
   string,
   { number: string; queryCode: string }
-> = {};
+> = {
+  'ailiuxu.com': {
+    number: '11011402056640',
+    queryCode: '11011402056640',
+  },
+  'www.ailiuxu.com': {
+    number: '11011402056640',
+    queryCode: '11011402056640',
+  },
+};
 
 export default function Footer() {
   const hostname = window.location.hostname.toLowerCase();
@@ -39,8 +48,14 @@ export default function Footer() {
                 rel="noopener noreferrer"
                 className="flex items-center gap-1 transition-colors duration-150 hover:text-[#a3a3a3]"
               >
-                <ShieldCheck size={13} aria-hidden="true" />
-                京公网安备 {publicSecurityRecord.number}号
+                <img
+                  src="/beian-icon.png"
+                  alt=""
+                  width={14}
+                  height={16}
+                  aria-hidden="true"
+                />
+                京公网安备{publicSecurityRecord.number}号
               </a>
             )}
           </div>
