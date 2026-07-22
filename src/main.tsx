@@ -1,10 +1,15 @@
-import { createRoot } from 'react-dom/client'
-import { BrowserRouter } from 'react-router'
-import './index.css'
-import App from './App.tsx'
+import { createRoot, hydrateRoot } from 'react-dom/client';
+import App from './App';
+import './index.css';
 
-createRoot(document.getElementById('root')!).render(
-  <BrowserRouter>
-    <App />
-  </BrowserRouter>,
-)
+const root = document.getElementById('root');
+
+if (!root) throw new Error('Missing #root element');
+
+const app = <App path={window.location.pathname} />;
+
+if (root.hasChildNodes()) {
+  hydrateRoot(root, app);
+} else {
+  createRoot(root).render(app);
+}
