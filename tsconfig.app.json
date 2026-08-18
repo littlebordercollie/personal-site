@@ -30,5 +30,17 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": [
+    "src/pages/About.tsx",
+    "src/pages/Brief.tsx",
+    "src/pages/CaseDetail.tsx",
+    "src/pages/Cases.tsx",
+    "src/pages/HomeB.tsx",
+    "src/pages/HomeC.tsx",
+    "src/pages/VersionCompare.tsx",
+    "src/pages/WorkWithMe.tsx",
+    "src/components/CaseCard.tsx",
+    "src/components/VersionSwitcher.tsx"
+  ]
 }

@@ -4,16 +4,13 @@ export default function Footer() {
   return (
     <footer className="site-footer">
       <div className="footer-inner">
-        <div>
-          <strong>刘旭</strong>
-          <p>从真实流程出发，用小型验证判断 AI 值不值得做。</p>
+        <div className="footer-identity">
+          <span className="footer-kicker">边牧AI · 刘旭</span>
+          <strong>帮助非技术团队把 AI 用进真实工作。</strong>
         </div>
         <div className="footer-links" aria-label="联系与备案">
           <a href={`mailto:${site.email}`}>{site.email}</a>
-          <span>微信：{site.wechat}</span>
-          <a href="https://beian.miit.gov.cn/" target="_blank" rel="noreferrer">
-            京ICP备2025136661号-2
-          </a>
+          <a href="https://beian.miit.gov.cn/" target="_blank" rel="noreferrer">京ICP备2025136661号-2</a>
           <a
             href="https://beian.mps.gov.cn/#/query/webSearch?code=11011402056640"
             target="_blank"

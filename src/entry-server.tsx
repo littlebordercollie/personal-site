@@ -1,35 +1,38 @@
 import { renderToString } from 'react-dom/server';
 import App from './App';
 import { normalizePath } from './routePath';
-import { caseStudies, selectedArticles, site } from './siteData';
+import { offerings, publicProjects, selectedArticles, site } from './siteData';
 
 export type RouteMeta = {
   title: string;
   description: string;
   canonical: string;
   type: 'website' | 'article' | 'profile';
+  noindex?: boolean;
   structuredData: Record<string, unknown> | Array<Record<string, unknown>>;
 };
 
 export const routePaths = [
   '/',
-  '/cases/',
-  ...caseStudies.map((study) => `/cases/${study.slug}/`),
-  '/work-with-me/',
+  '/projects/',
+  ...publicProjects.map((project) => `/projects/${project.slug}/`),
+  '/intro/',
   '/writing/',
   ...selectedArticles.map((article) => `/writing/${article.slug}/`),
-  '/about/',
-  '/brief/',
+  '/contact/',
 ];
 
+const personId = `${site.url}/intro/#person`;
 const person = {
   '@type': 'Person',
-  '@id': `${site.url}/about/#person`,
+  '@id': personId,
   name: site.name,
-  url: `${site.url}/about/`,
+  alternateName: site.brand,
+  url: `${site.url}/intro/`,
+  image: `${site.url}/evidence/liuxu-public-portrait.jpg`,
   email: `mailto:${site.email}`,
-  description:
-    '从真实流程出发，用小型验证判断 AI 是否值得做；提供业务诊断、原型验证与团队培训。',
+  jobTitle: '企业 AI 实训与真实工作应用实践者',
+  description: site.description,
 };
 
 function canonicalFor(path: string) {
@@ -38,10 +41,7 @@ function canonicalFor(path: string) {
 
 export function getRouteMeta(inputPath: string): RouteMeta {
   const path = normalizePath(inputPath);
-  const base = {
-    canonical: canonicalFor(path),
-    type: 'website' as const,
-  };
+  const base = { canonical: canonicalFor(path), type: 'website' as const };
 
   if (path === '/') {
     return {
@@ -53,108 +53,109 @@ export function getRouteMeta(inputPath: string): RouteMeta {
           '@context': 'https://schema.org',
           '@type': 'WebSite',
           '@id': `${site.url}/#website`,
-          name: '刘旭',
+          name: '边牧AI · 刘旭',
           url: `${site.url}/`,
           inLanguage: 'zh-CN',
-          author: { '@id': `${site.url}/about/#person` },
+          author: { '@id': personId },
         },
         { '@context': 'https://schema.org', ...person },
+        {
+          '@context': 'https://schema.org',
+          '@type': 'Service',
+          '@id': `${site.url}/#enterprise-ai-training`,
+          name: offerings[0].title,
+          description: offerings[0].summary,
+          provider: { '@id': personId },
+          areaServed: 'CN',
+          serviceType: '企业 AI 实训',
+        },
       ],
     };
   }
 
-  if (path === '/about/') {
+  if (path === '/projects/') {
     return {
       ...base,
-      type: 'profile',
-      title: '关于刘旭',
-      description:
-        '刘旭，得到讲师，正在撰写《飞书多维表格实战》；从真实流程出发，用小型验证判断 AI 是否值得做。',
-      structuredData: {
-        '@context': 'https://schema.org',
-        '@type': 'ProfilePage',
-        '@id': `${site.url}/about/#profile`,
-        url: `${site.url}/about/`,
-        name: '关于刘旭',
-        dateModified: '2026-07-22',
-        mainEntity: person,
-      },
-    };
-  }
-
-  if (path === '/cases/') {
-    return {
-      ...base,
-      title: '实践记录｜刘旭',
-      description:
-        '从体育师生 AI 实践工作坊，到篮协报名流程的最小验证：查看刘旭怎样把模糊需求变成能试、能用、能复盘的方案。',
+      title: '项目｜边牧AI · 刘旭',
+      description: '刘旭的企业 AI 实训案例、可运行原型和公开实践，清楚区分已核验事实与当前项目边界。',
       structuredData: {
         '@context': 'https://schema.org',
         '@type': 'CollectionPage',
-        name: '刘旭的实践记录',
-        url: `${site.url}/cases/`,
-        author: { '@id': `${site.url}/about/#person` },
+        name: '边牧AI项目',
+        url: canonicalFor(path),
+        author: { '@id': personId },
+        hasPart: publicProjects.map((project) => ({
+          '@type': 'CreativeWork',
+          name: project.title,
+          url: `${site.url}/projects/${project.slug}/`,
+          dateCreated: project.date,
+        })),
       },
     };
   }
 
-  const study = caseStudies.find(
-    (item) => path === `/cases/${item.slug}/`,
-  );
-  if (study) {
+  const project = publicProjects.find((item) => path === `/projects/${item.slug}/`);
+  if (project) {
     return {
       ...base,
       type: 'article',
-      title: `${study.shortTitle}｜刘旭`,
-      description: study.metaDescription,
+      title: `${project.shortTitle}｜边牧AI · 刘旭`,
+      description: project.metaDescription,
       structuredData: {
         '@context': 'https://schema.org',
-        '@type': 'Article',
-        headline: study.title,
-        description: study.metaDescription,
-        datePublished: study.date,
-        dateModified: '2026-07-22',
-        mainEntityOfPage: canonicalFor(path),
-        author: person,
+        '@type': 'CreativeWork',
+        '@id': `${canonicalFor(path)}#work`,
+        name: project.title,
+        headline: project.title,
+        description: project.metaDescription,
+        dateCreated: project.date,
+        dateModified: site.lastReviewed,
+        url: canonicalFor(path),
+        inLanguage: 'zh-CN',
+        creator: { '@id': personId },
+        image: project.image ? `${site.url}${project.image}` : undefined,
+        keywords: project.tags.join(', '),
       },
     };
   }
 
-  if (path === '/work-with-me/') {
+  if (path === '/intro/') {
     return {
       ...base,
-      title: '合作方式｜刘旭',
-      description:
-        '业务 AI 机会诊断、小型验证项目、团队培训与共创。先判断问题是否值得做，再决定采用什么工具。',
-      structuredData: {
-        '@context': 'https://schema.org',
-        '@type': 'WebPage',
-        name: '与刘旭合作',
-        url: `${site.url}/work-with-me/`,
-        author: person,
-      },
+      type: 'profile',
+      title: '介绍资料｜边牧AI · 刘旭',
+      description: '刘旭的商务介绍、讲师介绍、作者介绍、可讲主题、公开头像和联系邮箱。',
+      structuredData: [
+        { '@context': 'https://schema.org', ...person },
+        {
+          '@context': 'https://schema.org',
+          '@type': 'ProfilePage',
+          '@id': `${site.url}/intro/#profile`,
+          name: '刘旭介绍资料',
+          url: canonicalFor(path),
+          dateModified: site.lastReviewed,
+          mainEntity: { '@id': personId },
+        },
+      ],
     };
   }
 
   if (path === '/writing/') {
     return {
       ...base,
-      title: '精选文章｜刘旭',
-      description:
-        '刘旭关于 AI、飞书、数据与真实工作场景的精选文章；公众号暂用名称「一念既出」。',
+      title: '精选文章｜边牧AI · 刘旭',
+      description: '刘旭关于 AI、数据、飞书与真实工作场景的精选文章。',
       structuredData: {
         '@context': 'https://schema.org',
         '@type': 'CollectionPage',
         name: '刘旭的精选文章',
-        url: `${site.url}/writing/`,
-        author: person,
+        url: canonicalFor(path),
+        author: { '@id': personId },
       },
     };
   }
 
-  const article = selectedArticles.find(
-    (item) => path === `/writing/${item.slug}/`,
-  );
+  const article = selectedArticles.find((item) => path === `/writing/${item.slug}/`);
   if (article) {
     return {
       ...base,
@@ -167,45 +168,38 @@ export function getRouteMeta(inputPath: string): RouteMeta {
         headline: article.title,
         description: article.metaDescription,
         datePublished: article.date,
-        dateModified: '2026-07-22',
+        dateModified: site.lastReviewed,
         mainEntityOfPage: canonicalFor(path),
-        author: person,
+        author: { '@id': personId },
         isBasedOn: article.sourceUrl,
       },
     };
   }
 
-  if (path === '/brief/') {
+  if (path === '/contact/') {
     return {
       ...base,
-      title: '刘旭｜AI 业务问题诊断与小型验证',
-      description:
-        '一页了解刘旭怎样从真实流程出发，诊断业务问题、完成小型验证并支持团队使用 AI。',
+      title: '联系与合作｜边牧AI · 刘旭',
+      description: '从一个正在发生的真实任务开始，了解企业 AI 实训和小型验证项目需要准备什么。',
       structuredData: {
         '@context': 'https://schema.org',
-        '@type': 'WebPage',
-        name: '刘旭 AI 实践能力资料',
-        url: `${site.url}/brief/`,
-        author: person,
+        '@type': 'ContactPage',
+        name: '联系边牧AI · 刘旭',
+        url: canonicalFor(path),
+        mainEntity: { '@id': personId },
       },
     };
   }
 
   return {
     ...base,
-    title: '页面未找到｜刘旭',
+    noindex: true,
+    title: '页面未找到｜边牧AI · 刘旭',
     description: '你访问的页面不存在。',
-    structuredData: {
-      '@context': 'https://schema.org',
-      '@type': 'WebPage',
-      name: '页面未找到',
-    },
+    structuredData: { '@context': 'https://schema.org', '@type': 'WebPage', name: '页面未找到' },
   };
 }
 
 export function render(path: string) {
-  return {
-    html: renderToString(<App path={path} />),
-    meta: getRouteMeta(path),
-  };
+  return { html: renderToString(<App path={path} />), meta: getRouteMeta(path) };
 }

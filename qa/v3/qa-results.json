@@ -1,0 +1,22 @@
+{
+  "checkedAt": "2026-08-19",
+  "viewports": [
+    "1440x900",
+    "1280x800",
+    "390x844",
+    "360x800"
+  ],
+  "routes": [
+    "/",
+    "/projects/",
+    "/projects/job-training-prototype/",
+    "/intro/",
+    "/contact/"
+  ],
+  "checks": 20,
+  "overflowFailures": 0,
+  "brokenImageFailures": 0,
+  "tinyInteractiveFailures": 0,
+  "copyFeedback": "已复制",
+  "consoleErrors": 0
+}

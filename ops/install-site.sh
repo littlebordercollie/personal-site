@@ -93,7 +93,9 @@ trap cleanup EXIT
 
 tar --no-same-owner --no-same-permissions -xzf "$archive" -C "$staging_dir"
 
-for required_output in index.html 404.html robots.txt sitemap.xml og.png beian-icon.png; do
+for required_output in \
+    index.html 404.html robots.txt sitemap.xml og.png beian-icon.png \
+    projects/index.html intro/index.html writing/index.html contact/index.html; do
     if [[ ! -f "$staging_dir/$required_output" ]]; then
         echo "Release is missing $required_output" >&2
         exit 1
@@ -142,7 +144,7 @@ systemctl reload nginx
 
 smoke_failed=0
 if ! curl --fail --silent --show-error --resolve ailiuxu.com:443:127.0.0.1 \
-    https://ailiuxu.com/ | grep -q '<title>刘旭｜把 AI、数据和流程用进真实工作</title>'; then
+    https://ailiuxu.com/ | grep -q '<title>刘旭｜企业 AI 实训与真实工作应用</title>'; then
     echo "Homepage smoke test failed." >&2
     smoke_failed=1
 fi

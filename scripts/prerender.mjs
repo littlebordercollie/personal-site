@@ -20,7 +20,7 @@ function buildDocument(route, noindex = false) {
   const { html, meta } = render(route);
   const jsonLd = JSON.stringify(meta.structuredData).replaceAll('<', '\\u003c');
   const extraHead = [
-    noindex ? '<meta name="robots" content="noindex,follow" />' : '',
+    noindex || meta.noindex ? '<meta name="robots" content="noindex,follow" />' : '',
     `<script type="application/ld+json">${jsonLd}</script>`,
   ].filter(Boolean).join('\n    ');
 
@@ -51,8 +51,8 @@ const sitemap = [
   '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
   ...routePaths.map((route) => {
     const location = route === '/' ? 'https://ailiuxu.com/' : `https://ailiuxu.com${route}`;
-    const priority = route === '/' ? '1.0' : route === '/brief/' ? '0.4' : '0.8';
-    return `  <url><loc>${location}</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>${priority}</priority></url>`;
+    const priority = route === '/' ? '1.0' : route === '/projects/' || route === '/intro/' ? '0.9' : '0.7';
+    return `  <url><loc>${location}</loc><lastmod>2026-08-19</lastmod><changefreq>monthly</changefreq><priority>${priority}</priority></url>`;
   }),
   '</urlset>',
   '',

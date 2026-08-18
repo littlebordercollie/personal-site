@@ -1,12 +1,10 @@
 export default function NotFound() {
   return (
-    <section className="not-found section-shell">
-      <p className="eyebrow">404</p>
+    <section className="not-found page-shell">
+      <p className="section-index">404 / NOT FOUND</p>
       <h1>这个页面不存在。</h1>
-      <p>可能是地址输入有误，也可能是旧链接已经被整理。</p>
-      <a className="button primary" href="/">
-        返回首页
-      </a>
+      <p>地址可能输入有误，旧版页面也可能已经合并到新版内容中。</p>
+      <a className="button button-dark" href="/">返回首页</a>
     </section>
   );
 }
